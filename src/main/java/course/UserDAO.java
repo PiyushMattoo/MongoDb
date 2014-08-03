@@ -64,6 +64,34 @@ public class UserDAO {
     public DBObject validateLogin(String username, String password) {
         DBObject user;
 
+        // create an object suitable for insertion into the user collection
+        // be sure to add username and hashed password to the document. problem instructions
+        // will tell you the schema that the documents must follow.
+        DBObject doc = new BasicDBObject("_id", username)
+                .append("password", passwordHash);
+
+        if (email != null && !email.equals("")) {
+            // if there is an email address specified, add it to the document too.
+            doc = new BasicDBObject("_id", username)
+                    .append("password", passwordHash)
+                    .append("email", email);
+        }
+
+        try {
+            // insert the document into the user collection here
+            usersCollection.insert(doc);
+            return true;
+        } catch (MongoException.DuplicateKey e) {
+            System.out.println("Username already in use: " + username);
+            return false;
+        }
+    }
+
+    public DBObject validateLogin(String username, String password) {
+        DBObject user = null;
+
+        // XXX look in the user collection for a user that has this username
+        // assign the result to the user variable.
         user = usersCollection.findOne(new BasicDBObject("_id", username));
 
         if (user == null) {
